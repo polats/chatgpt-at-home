@@ -6,6 +6,17 @@ RUN pip install --no-cache-dir open-terminal
 # Create workspace for open-terminal
 RUN mkdir -p /home/terminal-user && chmod 777 /home/terminal-user
 
+# Web search (DuckDuckGo, free, no key needed)
+ENV ENABLE_WEB_SEARCH=True
+ENV WEB_SEARCH_ENGINE=duckduckgo
+ENV WEB_SEARCH_RESULT_COUNT=3
+ENV WEB_SEARCH_CONCURRENT_REQUESTS=10
+
+# Copy skill files and seed script
+COPY skills/ /app/skills/
+COPY scripts/ /app/scripts/
+RUN chmod +x /app/scripts/seed-skills.sh
+
 # Entrypoint that runs both services
 COPY <<'ENTRYPOINT' /app/start-all.sh
 #!/bin/bash
@@ -37,6 +48,9 @@ export TERMINAL_SERVER_CONNECTIONS='[{"id":"open-terminal","name":"Open Terminal
 if [ -z "$WEBUI_SECRET_KEY" ]; then
   export WEBUI_SECRET_KEY=$(head -c 12 /dev/random | base64)
 fi
+
+# --- Seed skills in background (waits for API to be ready) ---
+bash /app/scripts/seed-skills.sh &
 
 # --- Start Open WebUI (foreground) ---
 exec bash /app/backend/start.sh

@@ -10,49 +10,34 @@ A single-container deployment of [Open WebUI](https://github.com/open-webui/open
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/free-open-webui-terminal)
 
-## What You Get
-
-- Full ChatGPT-style interface with markdown, images, and file support
-- Code execution in the browser via Open Terminal
-- 100+ free models (Qwen, LLaMA, Mistral, and more) via NVIDIA NIM
-- Zero configuration — just add your free API key and go
-
 ## Quick Start
 
 ### One-Click Deploy (Railway)
 
 1. Click the **Deploy on Railway** button above
 2. Get a free API key from [NVIDIA NIM](https://build.nvidia.com/settings/api-keys) (no credit card needed)
-3. Paste it as `NVIDIA_NIM_API_KEY`
-4. Wait for the build to finish, open the generated URL
-5. Create an account and start chatting
+3. Set `NVIDIA_NIM_API_KEY` to your key
+4. Set `WEBUI_ADMIN_EMAIL` and `WEBUI_ADMIN_PASSWORD` to your desired login credentials
+5. Deploy, open the generated URL, and sign in
 
 ### Run Locally (Docker)
 
 ```bash
+cp .env.example .env
+# Edit .env with your NVIDIA_NIM_API_KEY and login credentials
 docker build -t chatgpt-at-home .
-docker run -d -p 3000:8080 -e NVIDIA_NIM_API_KEY=your-key-here chatgpt-at-home
+docker run -d -p 3000:8080 --env-file .env chatgpt-at-home
 ```
 
-Open http://localhost:3000, create an account, and you're in.
+Open http://localhost:3000 and sign in with your credentials.
 
 ## Environment Variables
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `NVIDIA_NIM_API_KEY` | Yes | — | Free API key from [NVIDIA NIM](https://build.nvidia.com/settings/api-keys) |
-| `DEFAULT_MODELS` | No | `qwen/qwen3.5-122b-a10b` | Pre-selected model for new users |
-| `OPENAI_API_BASE_URL` | No | `https://integrate.api.nvidia.com/v1` | Override to use a different OpenAI-compatible provider |
-| `OPENAI_API_KEY` | No | Falls back to `NVIDIA_NIM_API_KEY` | Override if using a different provider |
-
-## How It Works
-
-The Dockerfile bakes Open WebUI and Open Terminal into a single container. On startup, it:
-
-1. Launches Open Terminal on an internal port for code execution
-2. Configures Open WebUI to connect to NVIDIA NIM and Open Terminal
-3. Auto-generates secrets and sensible defaults
-4. Starts serving on the port provided by your host (Railway, Docker, etc.)
+| Variable | Required | Description |
+|---|---|---|
+| `NVIDIA_NIM_API_KEY` | Yes | Free API key from [NVIDIA NIM](https://build.nvidia.com/settings/api-keys) |
+| `WEBUI_ADMIN_EMAIL` | Yes | Admin login email |
+| `WEBUI_ADMIN_PASSWORD` | Yes | Admin login password |
 
 ## License
 
